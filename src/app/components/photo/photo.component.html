@@ -1,0 +1,18 @@
+<div class="card">
+  <div
+    class="card-content"
+    [ngStyle]="{'background-image': photo.height > photo.width ? blurredUrl : 'none'}"
+  >
+    <img
+      [src]="photo.download_url"
+      [alt]="'Author: ' + photo.author"
+      height="300"
+      width="300"
+      loading="lazy"
+      class="photo"
+    >
+  </div>
+  <div class="card-title">
+    <span>{{ photo.author }}</span>
+  </div>
+</div>
