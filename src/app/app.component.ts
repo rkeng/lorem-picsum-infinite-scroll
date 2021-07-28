@@ -3,7 +3,7 @@ import { AfterViewInit, Component, NgZone, OnInit, ViewChild } from '@angular/co
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 // RxJS
-import { filter, finalize, map, pairwise, throttleTime } from 'rxjs/operators';
+import { filter, map, pairwise, throttleTime } from 'rxjs/operators';
 
 // Models
 import { Photo } from './models/photo.model';
@@ -24,7 +24,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   @ViewChild('scroller') scroller!: CdkVirtualScrollViewport;
   pageNumber: number;
   photoList: Photo[];
-  isLoading = false;
   isMobile = false;
 
   constructor(
@@ -46,7 +45,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.scroller.elementScrolled().pipe(
       map(() => this.scroller.measureScrollOffset('bottom')),
       pairwise(),
-      filter(([y1, y2]) => (y2 < y1 && y2 === 0)),
+      filter(([y1, y2]) => (y2 < y1 && (this.isMobile ? y2 < 272 : y2 < 368))),
       throttleTime(200)
     ).subscribe(() => {
       this.ngZone.run(() => {
@@ -64,9 +63,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   // Private methods
 
   private loadMore() {
-    this.isLoading = true;
     this.photoService.getPhotos(++this.pageNumber, 10)
-      .pipe(finalize(() => this.isLoading = false))
       .subscribe(photos => {
         this.photoList = this.photoList.concat(photos);
       });

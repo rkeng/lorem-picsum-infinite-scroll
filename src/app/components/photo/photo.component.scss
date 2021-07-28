@@ -17,6 +17,10 @@
     justify-content: center;
     align-items: center;
     margin-top: auto;
+
+    .pulse {
+      height: 2rem;
+    }
   }
 
   .card-content {
@@ -24,6 +28,14 @@
     justify-content: center;
     background-size: cover;
     background-position: center;
+
+    .pulse {
+      height: 12rem;
+
+      @media (min-width: 576px) {
+        height: 18rem;
+      }
+    }
 
     .photo {
       height: auto;
