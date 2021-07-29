@@ -1,27 +1,70 @@
-# PicsumInfiniteScroll
+# Lorem Picsum Infinite Scroll
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.1.3.
+Infinite scrolling of a list of photos from [Lorem Picsum](https://picsum.photos/) in Angular.
 
-## Development server
+[Demo](https://ryankeng.com/lorem-picsum-infinite-scroll)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Environment
 
-## Code scaffolding
+### Prerequisites
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Install [Node.js](https://nodejs.org/en/about/releases/).
 
-## Build
+Install the Angular CLI.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```
+npm install -g @angular/cli
+```
 
-## Running unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### Installation
 
-## Running end-to-end tests
+```
+git clone https://github.com/rkeng/lorem-picsum-infinite-scroll.git
+npm install
+ng serve --open
+```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+## Components
 
-## Further help
+### `app-photo`
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+#### Properties
+
+Name | Type | Default Value | Description
+--- | --- | --- | ---
+`photo` | `Photo` | `null` | Photo data (`height`, `width`, `author`, `download_url`); if not provided, `app-photo` defaults to the skeleton view.
+
+#### Usage
+
+##### HTML
+
+```html
+<!-- Photo card -->
+<app-photo [photo]="photo"></app-photo>
+
+<!-- Photo skeleton -->
+<app-photo></app-photo>
+```
+
+#### Screenshots
+
+Photo card | Photo skeleton
+--- | ---
+![Photo card](./media/photo-card.png?raw=true) | ![Photo skeleton](./media/photo-skeleton.png?raw=true)
+
+## Design Principles
+
+### Single Responsibility of Components
+
+Components should be loosely-coupled. In our case, the parent component `app.component` is responsible for fetching data and populating a list of photos. Each child component `photo.component`, on the other hand, retrieves and renders that piece of data. By separating the business logic layer and the presentation layer, we as developers can easily organize the code structure and write less error-prone code.
+
+### Performance
+
+#### Virtual Scrolling
+
+Displaying large lists of elements can be slow. With the `scrolling` package provided by Angular Material CDK, we are able to achieve this performantly by only rendering the items that fit on-screen. Virtual scrolling adjusts the height of the container element to be the same as the accumulative height of the elements to be rendered.
+
+#### Image Lazy Loading
+
+To achieve image lazy loading in Angular, we simply add the `loading="lazy"` attribute to the `img` element. This defers loading of the resource until it reaches a [calculated distance](https://web.dev/browser-level-image-lazy-loading/#distance-from-viewport-thresholds) from the viewport.
