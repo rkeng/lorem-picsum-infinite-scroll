@@ -4,7 +4,7 @@
   [itemSize]="isMobile ? 272 : 368"
   class="photo-scroll-viewport"
 >
-  <div class="photo-list-container">
+  <main class="photo-list-container">
     <!-- Photo List -->
     <app-photo
       *cdkVirtualFor="let photo of photoList"
@@ -16,5 +16,5 @@
     <ng-template #isError>
       <div class="error">{{ errorMsg }}</div>
     </ng-template>
-  </div>
+  </main>
 </cdk-virtual-scroll-viewport>
