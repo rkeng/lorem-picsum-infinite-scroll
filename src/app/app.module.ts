@@ -5,11 +5,13 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 
 import { AppComponent } from './app.component';
 import { PhotoComponent } from './components/photo/photo.component';
+import { NavComponent } from './components/nav/nav.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    PhotoComponent
+    PhotoComponent,
+    NavComponent
   ],
   imports: [
     BrowserModule,

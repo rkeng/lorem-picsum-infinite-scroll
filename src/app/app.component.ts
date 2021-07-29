@@ -3,7 +3,8 @@ import { AfterViewInit, Component, NgZone, OnInit, ViewChild } from '@angular/co
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 // RxJS
-import { filter, map, pairwise, throttleTime } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { catchError, filter, map, pairwise, throttleTime } from 'rxjs/operators';
 
 // Models
 import { Photo } from './models/photo.model';
@@ -24,13 +25,14 @@ export class AppComponent implements OnInit, AfterViewInit {
   @ViewChild('scroller') scroller!: CdkVirtualScrollViewport;
   pageNumber: number;
   photoList: Photo[];
-  isMobile = false;
+  isMobile = false; // rendered elements' height varies with screen width
+  errorMsg = '';
 
   constructor(
     private ngZone: NgZone,
     private photoService: PhotoService
   ) {
-    this.pageNumber = 0;
+    this.pageNumber = 1;
     this.photoList = [];
   }
 
@@ -42,12 +44,18 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    // Whenever the virtual scroller scrolls
     this.scroller.elementScrolled().pipe(
+      // Get the scroll offset from the bottom
       map(() => this.scroller.measureScrollOffset('bottom')),
+      // Get emitted values in pairs: [previousValue, currentValue]
       pairwise(),
+      // Continue emission if movement is a downward scroll and list is near the bottom
       filter(([y1, y2]) => (y2 < y1 && (this.isMobile ? y2 < 272 : y2 < 368))),
+      // Lets a value pass, but ignore next values for the next 200ms
       throttleTime(200)
     ).subscribe(() => {
+      // Virtual scroller runs outside Angular zone, let API call reenter Angular zone
       this.ngZone.run(() => {
         this.loadMore();
       });
@@ -63,9 +71,19 @@ export class AppComponent implements OnInit, AfterViewInit {
   // Private methods
 
   private loadMore() {
-    this.photoService.getPhotos(++this.pageNumber, 10)
+    this.photoService.getPhotos(this.pageNumber, 10)
+      .pipe(
+        catchError(errorMsg => {
+          this.errorMsg = errorMsg;
+          return of([]);
+        })
+      )
       .subscribe(photos => {
-        this.photoList = this.photoList.concat(photos);
+        if (photos.length) {
+          this.photoList = this.photoList.concat(photos);
+          this.pageNumber++;
+          this.errorMsg = '';
+        }
       });
   }
 }

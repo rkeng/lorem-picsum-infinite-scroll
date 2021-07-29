@@ -1,34 +1,4 @@
-<nav class="nav">
-  <a
-    href="https://ryankeng.com"
-    title="Ryan Keng"
-    class="logo-wrapper"
-  >
-    <img
-      height="32"
-      width="32"
-      src="https://ryankeng.com/img/rk-logo-light.svg"
-      alt="Ryan Keng"
-      class="logo"
-    >
-  </a>
-  <span>Lorem Picsum Infinite Scroll</span>
-  <a
-    href="https://github.com/rkeng/lorem-picsum-infinite-scroll"
-    title="Visit GitHub repo"
-    class="logo-wrapper"
-    style="margin-left: auto;"
-    target="_blank"
-  >
-    <img
-      height="32"
-      width="32"
-      src="/assets/gh-mark-light.png"
-      alt="GitHub"
-      class="logo"
-    >
-  </a>
-</nav>
+<app-nav></app-nav>
 <cdk-virtual-scroll-viewport
   #scroller
   [itemSize]="isMobile ? 272 : 368"
@@ -41,6 +11,10 @@
       [photo]="photo"
     ></app-photo>
     <!-- Photo Skeleton -->
-    <app-photo></app-photo>
+    <app-photo *ngIf="!errorMsg; else isError"></app-photo>
+    <!-- Error Message -->
+    <ng-template #isError>
+      <div class="error">{{ errorMsg }}</div>
+    </ng-template>
   </div>
 </cdk-virtual-scroll-viewport>
