@@ -1,0 +1,1 @@
+body,html{font-family:Lora,serif;margin:0 auto}.pulse,body,html{height:100%;width:100%}.pulse{background:linear-gradient(-90deg,#efefef,#fcfcfc 50%,#efefef);background-size:400% 400%;animation:pulse 1.2s ease-in-out infinite}@keyframes pulse{0%{background-position:0 0}to{background-position:-135% 0}}
