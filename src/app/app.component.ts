@@ -4,7 +4,7 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 // RxJS
 import { of } from 'rxjs';
-import { catchError, filter, map, pairwise, throttleTime } from 'rxjs/operators';
+import { catchError, filter, finalize, map, pairwise, throttleTime } from 'rxjs/operators';
 
 // Models
 import { Photo } from './models/photo.model';
@@ -27,6 +27,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   photoList: Photo[];
   isMobile = false; // rendered elements' height varies with screen width
   errorMsg = '';
+  isLoading = false;
 
   constructor(
     private ngZone: NgZone,
@@ -51,7 +52,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       // Get emitted values in pairs: [previousValue, currentValue]
       pairwise(),
       // Continue emission if movement is a downward scroll and list is near the bottom
-      filter(([y1, y2]) => (y2 < y1 && (this.isMobile ? y2 < 272 : y2 < 368))),
+      filter(([y1, y2]) => (!this.isLoading && y2 < y1 && (this.isMobile ? y2 < 272 : y2 < 368))),
       // Lets a value pass, but ignore next values for the next 200ms
       throttleTime(200)
     ).subscribe(() => {
@@ -71,12 +72,14 @@ export class AppComponent implements OnInit, AfterViewInit {
   // Private methods
 
   private loadMore() {
+    this.isLoading = true;
     this.photoService.getPhotos(this.pageNumber, 10)
       .pipe(
         catchError(errorMsg => {
           this.errorMsg = errorMsg;
           return of([]);
-        })
+        }),
+        finalize(() => this.isLoading = false)
       )
       .subscribe(photos => {
         if (photos.length) {
